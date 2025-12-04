@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZHANG BO | Architecture & Design Portfolio</title>
+    <style>
+        /* --- [核心样式系统] --- */
+        :root {
+            --bg-body: #ffffff;
+            --bg-light: #f8f9fa;
+            --text-main: #222;
+            --text-gray: #666;
+            --accent: #b33939; 
+            --font-stack: 'Helvetica Neue', Helvetica, 'PingFang SC', sans-serif;
+            --max-width: 1440px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        
+        body {
+            font-family: var(--font-stack);
+            color: var(--text-main);
+            background: var(--bg-body);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* --- [布局组件] --- */
+        .container { max-width: var(--max-width); margin: 0 auto; padding: 0 5%; }
+        
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
+        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; }
+        .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+        
+        /* 针对移动端的适配 */
+        @media (max-width: 768px) {
+            .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; gap: 30px; }
+            .hero-content { grid-template-columns: 1fr !important; }
+            h1 { font-size: 3rem !important; }
+        }
+
+        /* --- [导航栏] --- */
+        nav {
+            position: fixed; top: 0; width: 100%; padding: 20px 5%;
+            background: rgba(255,255,255,0.95); backdrop-filter: blur(10px);
+            display: flex; justify-content: space-between; align-items: center;
+            z-index: 1000; border-bottom: 1px solid #eee;
+        }
+        .logo { font-weight: 800; font-size: 1.2rem; letter-spacing: 1px; }
+        .nav-links a { margin-left: 25px; font-size: 0.85rem; color: var(--text-gray); text-transform: uppercase; font-weight: 600; text-decoration: none; transition: 0.3s; }
+        .nav-links a:hover { color: var(--text-main); }
+
+        /* --- [Header] --- */
+        header {
+            padding-top: 140px; padding-bottom: 100px;
+            background-color: var(--bg-light);
+        }
+        .hero-content { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 60px; align-items: center; }
+        h1 { font-size: 4.5rem; line-height: 1; margin-bottom: 20px; letter-spacing: -2px; }
+        .subtitle { font-size: 1.5rem; color: var(--text-gray); margin-bottom: 30px; font-weight: 300; }
+        
+        .tags { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 30px; }
+        .tag { padding: 6px 12px; background: #e9ecef; border-radius: 4px; font-size: 0.8rem; font-weight: 700; color: #555; }
+        .tag.highlight { background: #222; color: #fff; }
+
+        .bio p { margin-bottom: 15px; font-size: 1rem; color: #444; max-width: 650px; }
+        
+        .hero-img {
+            height: 550px; background: #ddd; border-radius: 8px; overflow: hidden; position: relative;
+        }
+        .hero-img img { width: 100%; height: 100%; object-fit: cover; }
+
+        /* --- [板块通用] --- */
+        .section { padding: 120px 0; border-bottom: 1px solid #eee; }
+        .section-header { margin-bottom: 60px; max-width: 800px; }
+        .section-label { font-size: 0.9rem; color: var(--accent); font-weight: 700; letter-spacing: 1px; margin-bottom: 10px; display: block; }
+        h2 { font-size: 3rem; margin-bottom: 20px; letter-spacing: -1px; }
+        .desc { font-size: 1.1rem; color: #666; line-height: 1.8; }
+
+        /* --- [图片容器] --- */
+        .img-box {
+            background: #f0f0f0; overflow: hidden; position: relative;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .img-box img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.7s cubic-bezier(0.2, 1, 0.3, 1); }
+        .img-box.contain img { object-fit: contain; padding: 20px; } /* 用于平面图 */
+        .img-box:hover img { transform: scale(1.03); }
+        
+        .full-width { width: 100%; height: 70vh; margin-bottom: 30px; }
+        .wide { aspect-ratio: 16/9; }
+        .tall { aspect-ratio: 3/4; }
+        .square { aspect-ratio: 1/1; }
+        
+        .placeholder-text {
+            position: absolute; font-family: monospace; color: #aaa; background: rgba(255,255,255,0.9); padding: 4px 8px; font-size: 12px; pointer-events: none;
+        }
+
+        /* --- [项目文字] --- */
+        h3 { font-size: 1.6rem; margin-top: 20px; margin-bottom: 8px; }
+        h4 { font-size: 1.2rem; margin-top: 15px; margin-bottom: 5px; }
+        .caption { color: #888; font-size: 0.95rem; }
+
+        /* --- [页脚] --- */
+        footer { padding: 100px 0; background: #111; color: #fff; text-align: center; }
+        .contact-item { font-size: 1.5rem; margin-bottom: 10px; font-weight: 300; }
+    </style>
+</head>
+<body>
+
+    <!-- 导航 -->
+    <nav>
+        <div class="logo">ZHANG BO.</div>
+        <div class="nav-links">
+            <a href="#about">Profile</a>
+            <a href="#urban">Urban</a>
+            <a href="#commercial">Commercial</a>
+            <a href="#living">Living</a>
+            <a href="#academic">Academic</a>
+        </div>
+    </nav>
+
+    <!-- 00. 个人简介 (Profile) -->
+    <header id="about">
+        <div class="container hero-content">
+            <div class="hero-text">
+                <h1>DESIGN<br>MANAGER.</h1>
+                <div class="subtitle">Architect | Product Standardization Expert</div>
+                
+                <div class="tags">
+                    <span class="tag highlight">8 Yrs Design</span>
+                    <span class="tag highlight">5 Yrs Management</span>
+                    <span class="tag">Vanke</span>
+                    <span class="tag">Longfor</span>
+                    <span class="tag">UDS Japan</span>
+                </div>
+
+                <div class="bio">
+                    <p>我是张博，一名具备国际视野的设计管理者以及设计师。毕业于<strong>日本法政大学</strong>，现从事<strong>建筑/室内设计与设计管理工作</strong>。</p>
+                    <p>我的职业生涯跨越了日式严谨建构与中国地产的高效开发。从<strong>UDS</strong>的商业设计，到<strong>愿景集团</strong>的城市更新，再到<strong>龙湖/万科</strong>的产品标准化研发。我擅长在成本与品质之间寻找最优解，拥有极强的产品迭代与标准化制定能力，同时保持着对高端定制化设计的敏锐触觉。</p>
+                </div>
+            </div>
+            
+            <div class="hero-img">
+                <img src="cover.jpg" alt="Zhang Bo" onerror="this.style.display='none'">
+                <div class="placeholder-text">Photo: cover.jpg</div>
+            </div>
+        </div>
+    </header>
+
+    <!-- 01. 城市更新 (Urban Renewal) -->
+    <section id="urban" class="section container">
+        <div class="section-header">
+            <span class="section-label">01 / URBAN RENEWAL</span>
+            <h2>Revitalizing the City</h2>
+            <p class="desc">从大连百年的历史街区，到深圳高密度的城中村。通过“针灸式”更新与标准化体系，解决复杂的城市存量问题。</p>
+        </div>
+
+        <!-- 东关街 -->
+        <div style="margin-bottom: 80px;">
+            <h3>The Rebirth of Dongguan Street (大连东关街)</h3>
+            <p class="caption" style="margin-bottom: 20px;">历史街区城市更新与商业活化 | Lead Designer</p>
+            <div class="img-box full-width">
+                <img src="p1-main.jpg" alt="Dongguan Main" onerror="this.style.display='none'">
+                <div class="placeholder-text">p1-main.jpg (新旧对比大图)</div>
+            </div>
+            <div class="grid-4">
+                <div class="img-box tall"><img src="p1-street.jpg" onerror="this.style.display='none'"><div class="placeholder-text">p1-street.jpg</div></div>
+                <div class="img-box tall"><img src="p1-lane.jpg" onerror="this.style.display='none'"><div class="placeholder-text">p1-lane.jpg</div></div>
+                <div class="img-box tall"><img src="p1-place.jpg" onerror="this.style.display='none'"><div class="placeholder-text">p1-place.jpg</div></div>
+                <div class="img-box tall"><img src="p1-yard.jpg" onerror="this.style.display='none'"><div class="placeholder-text">p1-yard.jpg</div></div>
+            </div>
+        </div>
+
+        <!-- 展厅 & 微棠 -->
+        <div class="grid-2">
+            <div>
+                <div class="img-box tall"><img src="p2-render.jpg" onerror="this.style.display='none'"><div class="placeholder-text">p2-render.jpg</div></div>
+                <h3>Symbiotic Gallery (共生展厅)</h3>
+                <p class="caption">东关街单体深化 | 钢木互译构造</p>
+            </div>
+            <div>
+                <div class="img-box tall"><img src="p3-1.jpg" onerror="this.style.display='none'"><div class="placeholder-text">p3-1.jpg</div></div>
+                <h3>V-Town Community (深圳微棠)</h3>
+                <p class="caption">城中村标准化居住改造</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 02. 商业办公 (Commercial) -->
+    <section id="commercial" class="section container">
+        <div class="section-header">
+            <span class="section-label">02 / COMMERCIAL & WORKSPACE</span>
+            <h2>Business & Aesthetics</h2>
+            <p class="desc">关注商业逻辑与空间美学的平衡。通过场景化设计提升空间溢价，打造年轻化、高活力的商业目的地。</p>
+        </div>
+
+        <!-- Bay Works -->
+        <div style="margin-bottom: 80px;">
+            <h3>Bay Works Co-working Space</h3>
+            <p class="caption" style="margin-bottom: 20px;">共享办公室内设计 | 轴测功能规划</p>
+            
+            <div class="img-box full-width" style="height: 60vh;">
+                <img src="bayworks-2.jpg" alt="Bar" onerror="this.style.display='none'">
+                <div class="placeholder-text">bayworks-2.jpg (吧台)</div>
+            </div>
+
+            <div class="grid-2" style="margin-bottom: 20px;">
+                <div class="img-box wide contain" style="background:#fff;"><img src="bayworks-iso.jpg" onerror="this.style.display='none'"><div class="placeholder-text">bayworks-iso.jpg (轴测)</div></div>
+                <div class="img-box wide contain" style="background:#fff;"><img src="bayworks-plan.jpg" onerror="this.style.display='none'"><div class="placeholder-text">bayworks-plan.jpg (平面)</div></div>
+            </div>
+            <div class="grid-3">
+                <div class="img-box square"><img src="bayworks-1.jpg" onerror="this.style.display='none'"><div class="placeholder-text">bayworks-1.jpg</div></div>
+                <div class="img-box square"><img src="bayworks-3.jpg" onerror="this.style.display='none'"><div class="placeholder-text">bayworks-3.jpg</div></div>
+                <div class="img-box square"><img src="bayworks-4.jpg" onerror="this.style.display='none'"><div class="placeholder-text">bayworks-4.jpg</div></div>
+            </div>
+        </div>
+
+        <!-- 酒店精选 -->
+        <div class="grid-2">
+            <div>
+                <div class="img-box tall"><img src="comm-1.jpg" onerror="this.style.display='none'"><div class="placeholder-text">comm-1.jpg</div></div>
+                <h4>Qingdao Flow Hotel</h4>
+            </div>
+            <div>
+                <div class="img-box tall"><img src="comm-2.jpg" onerror="this.style.display='none'"><div class="placeholder-text">comm-2.jpg</div></div>
+                <h4>Xi'an Soft Hotel</h4>
+            </div>
+        </div>
+    </section>
+
+    <!-- 03. 居住产品 (Living Product) -->
+    <section id="living" class="section container">
+        <div class="section-header">
+            <span class="section-label">03 / LIVING PRODUCT & BESPOKE</span>
+            <h2>Product & Private Home</h2>
+            <p class="desc">B端标准化与C端定制化的双重能力。从龙湖/万科的产品标准研发，到高端私宅的定制设计，精细打磨居住体验。</p>
+        </div>
+
+        <!-- [PART A] 地产开发与标准化 -->
+        <div style="margin-bottom: 80px;">
+            <div class="grid-2">
+                <div>
+                    <h3>Vanke Hongyin (万科泓胤)</h3>
+                    <p class="caption">大连高端住宅 | 历史街区旁的现代奢居</p>
+                    <div class="img-box tall" style="margin-top:15px;"><img src="living-1.jpg" onerror="this.style.display='none'"><div class="placeholder-text">living-1.jpg</div></div>
+                </div>
+                <div>
+                    <h3>Longfor Guan Yu (龙湖冠寓)</h3>
+                    <p class="caption">长租公寓 | 产品标准 3.0 研发</p>
+                    <div class="img-box tall" style="margin-top:15px;"><img src="living-2.jpg" onerror="this.style.display='none'"><div class="placeholder-text">living-2.jpg</div></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- [PART B] 私宅定制 (Bespoke) -->
+        
+        <!-- 1. 惠州别墅 -->
+        <div style="margin-bottom: 80px; padding-top: 40px; border-top: 1px dashed #ddd;">
+            <h3>Huizhou Zhijunyu Villa (惠州直君御)</h3>
+            <p class="caption" style="margin-bottom: 20px;">私宅定制设计 | 复古绿与胡桃木的法式对话</p>
+            <div class="img-box full-width" style="height: auto;">
+                <img src="living-custom-1.jpg" style="width:100%; height:auto;" onerror="this.style.display='none'">
+                <div class="placeholder-text">living-custom-1.jpg</div>
+            </div>
+            <div class="grid-2">
+                <div class="img-box tall"><img src="living-custom-3.jpg" onerror="this.style.display='none'"><div class="placeholder-text">living-custom-3.jpg</div></div>
+                <div class="img-box tall"><img src="living-custom-2.jpg" onerror="this.style.display='none'"><div class="placeholder-text">living-custom-2.jpg</div></div>
+            </div>
+        </div>
+
+        <!-- 2. 城市大宅 (New!) -->
+        <div style="margin-bottom: 40px;">
+            <h3>Urban Luxury Residence (城市大平层)</h3>
+            <p class="caption" style="margin-bottom: 20px;">现代极简豪宅 | 大尺度横厅与无主灯设计</p>
+            
+            <!-- 方案分析图 -->
+            <div class="img-box contain" style="width: 100%; height: auto; background: #fff; margin-bottom: 30px;">
+                <img src="luxury-plan.jpg" style="width:100%; height:auto;" onerror="this.style.display='none'">
+                <div class="placeholder-text">luxury-plan.jpg (平面分析图)</div>
+            </div>
+
+            <div class="grid-2">
+                <div class="img-box tall"><img src="luxury-1.jpg" onerror="this.style.display='none'"><div class="placeholder-text">luxury-1.jpg (钢琴区)</div></div>
+                <div>
+                    <div class="img-box wide" style="margin-bottom: 20px;"><img src="luxury-2.jpg" onerror="this.style.display='none'"><div class="placeholder-text">luxury-2.jpg (全景)</div></div>
+                    <div class="img-box wide"><img src="luxury-3.jpg" onerror="this.style.display='none'"><div class="placeholder-text">luxury-3.jpg (电视墙)</div></div>
+                </div>
+            </div>
+        </div>
+
+    </section>
+
+    <!-- 04. 学术作品 (Academic) -->
+    <section id="academic" class="section container" style="border-bottom: none;">
+        <div class="section-header">
+            <span class="section-label">04 / ACADEMIC</span>
+            <h2>The Origins</h2>
+        </div>
+        <div class="grid-2">
+            <div>
+                <div class="img-box tall"><img src="p4-zen.jpg" onerror="this.style.display='none'"><div class="placeholder-text">p4-zen.jpg</div></div>
+                <h3>Zen Planetarium</h3>
+            </div>
+            <div>
+                <div class="img-box tall"><img src="p4-fuji.jpg" onerror="this.style.display='none'"><div class="placeholder-text">p4-fuji.jpg</div></div>
+                <h3>Fuji Hut</h3>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <h2 style="margin-bottom: 40px;">Let's Create Together.</h2>
+            <div class="contact-item">198-6615-7329</div>
+            <div class="contact-item">zb448420978@126.com</div>
+            <p style="margin-top: 50px; font-size: 0.8rem; color: #555;">© 2025 ZHANG BO. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+</body>
+</html>
